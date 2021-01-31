@@ -1,36 +1,43 @@
-import React, {Component} from "react";
-import {CKEditor} from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-
-
-
+import React, { Component } from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import DecoupledEditor from "@ckeditor/ckeditor5-build-decoupled-document";
 
 class Editor extends Component {
-    render() {
-        return (
-            <div className="App">
-                <h2>React Text Editor</h2>
-                <CKEditor
-                    editor={ClassicEditor}
-                    data="<p>Thanks for choosing my editor</p>"
-                    onReady={editor => {
-                        // Store the editor and use it when it is needed
-                        console.log("Editor is ready to use!", editor);
-                    }}
-                    onChange={(event, editor) => {
-                        const data = editor.getData();
-                        console.log({event, editor, data});
-                    }}
-                    onBlur={(event, editor) => {
-                        console.log("Blur", editor);
-                    }}
-                    onFocus={(event, editor) => {
-                        console.log("Focus", editor)
-                    }}
-                />
-            </div>
-        )
-    }
-}
+  editor = null;
 
+  render() {
+    return (
+      <div className="App">
+        <h2>CKEditor 5 using a custom build - decoupled editor</h2>
+        <CKEditor
+          onReady={(editor) => {
+            console.log("Editor is ready to use!", editor);
+
+            // Insert the toolbar before editable area.
+            editor.ui
+              .getEditableElement()
+              .parentElement.insertBefore(
+                editor.ui.view.toolbar.element,
+                editor.ui.getEditableElement()
+              );
+
+            this.editor = editor;
+          }}
+          onError={({ willEditorRestart }) => {
+            // If the editor is restarted, the toolbar element will be created once again.
+            // The 'onReady' callback will be called again and the new toolbar will be added.
+            // This is why you need to remove the onld toolbar
+            if (willEditorRestart) {
+              this.editor.ui.view.toolbar.element.remove();
+            }
+          }}
+          onChange={(event, editor) => console.log({ event, editor })}
+          editor={DecoupledEditor}
+          data="<p>Hello from CKEditor 5's decoupled editor!</p>"
+          config={DecoupledEditor}
+        />
+      </div>
+    );
+  }
+}
 export default Editor;
