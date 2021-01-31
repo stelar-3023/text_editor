@@ -26,7 +26,7 @@ class Editor extends Component {
           onError={({ willEditorRestart }) => {
             // If the editor is restarted, the toolbar element will be created once again.
             // The 'onReady' callback will be called again and the new toolbar will be added.
-            // This is why you need to remove the onld toolbar
+            // This is why you need to remove the old toolbar
             if (willEditorRestart) {
               this.editor.ui.view.toolbar.element.remove();
             }
